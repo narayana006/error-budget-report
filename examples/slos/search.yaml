@@ -1,0 +1,14 @@
+apiVersion: openslo/v1
+kind: SLO
+metadata:
+  name: search-availability
+  displayName: Search availability
+spec:
+  description: Search queries that return a result page.
+  service: search
+  budgetingMethod: Occurrences
+  timeWindow:
+    - duration: 28d
+      isRolling: true
+  objectives:
+    - target: 0.995

@@ -1,0 +1,7 @@
+# The short form: no OpenSLO envelope, just the fields the report needs.
+slos:
+  - name: notifications-delivery
+    service: notifications
+    description: Push notifications accepted by the provider.
+    target: 0.99
+    window: 14d

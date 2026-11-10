@@ -1,0 +1,55 @@
+# Two OpenSLO documents in one file. The Service document is skipped by the tool.
+apiVersion: openslo/v1
+kind: Service
+metadata:
+  name: checkout
+  displayName: Checkout
+spec:
+  description: Cart, payment and order placement.
+---
+apiVersion: openslo/v1
+kind: SLO
+metadata:
+  name: checkout-availability
+  displayName: Checkout availability
+spec:
+  description: Checkout API requests answered without a 5xx.
+  service: checkout
+  budgetingMethod: Occurrences
+  indicator:
+    metadata:
+      name: checkout-good-requests
+    spec:
+      ratioMetric:
+        counter: true
+        good:
+          metricSource:
+            type: Prometheus
+            spec:
+              query: sum(rate(http_requests_total{job="checkout",code!~"5.."}[5m]))
+        total:
+          metricSource:
+            type: Prometheus
+            spec:
+              query: sum(rate(http_requests_total{job="checkout"}[5m]))
+  timeWindow:
+    - duration: 28d
+      isRolling: true
+  objectives:
+    - displayName: Successful requests
+      target: 0.999
+---
+apiVersion: openslo/v1
+kind: SLO
+metadata:
+  name: checkout-latency
+  displayName: Checkout latency
+spec:
+  description: Checkout API requests answered within 400 ms.
+  service: checkout
+  budgetingMethod: Occurrences
+  timeWindow:
+    - duration: 28d
+      isRolling: true
+  objectives:
+    - targetPercent: 99
